@@ -1,7 +1,4 @@
-.venv
 .DS_Store
-implements.md
+PlaylistSaver
 playlist.txt
-playlist_copy.txt
-playlist_test.txt
 youtube_playlists.db
