@@ -2,3 +2,4 @@
 PlaylistSaver
 playlist.txt
 youtube_playlists.db
+__pycache__
