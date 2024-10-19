@@ -188,9 +188,9 @@ def process_playlists():
                     _, video_title, video_author = process_video_item(item, index)
                     visible_video_ids.add((video_title, video_author))
                 except (
-                        TimeoutException,
-                        NoSuchElementException,
-                        StaleElementReferenceException,
+                    TimeoutException,
+                    NoSuchElementException,
+                    StaleElementReferenceException,
                 ):
                     pass
 
@@ -222,9 +222,9 @@ def process_playlists():
                     )
                     print(f"{index}. {video_author} : {video_title}")
                 except (
-                        TimeoutException,
-                        NoSuchElementException,
-                        StaleElementReferenceException,
+                    TimeoutException,
+                    NoSuchElementException,
+                    StaleElementReferenceException,
                 ) as e:
                     print(f"Error processing video {index}: {str(e)}")
                     c.execute(
