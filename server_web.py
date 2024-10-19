@@ -1,19 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from main import process_playlists
 import sqlite3
-import re
-import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException,
-    NoSuchElementException,
-    StaleElementReferenceException,
-)
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -64,3 +51,19 @@ def get_deleted_videos():
 # 애플리케이션을 디버그 모드로 실행합니다.
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
+
+
+# 버튼 클릭 이벤트 핸들러 추가
+@app.route("/show_deleted", methods=["GET"])
+def handle_show_deleted():
+    return show_deleted_table()
+
+
+# HTML 템플릿에 "show deleted" 버튼 추가
+# 예시:
+# <button onclick="window.location.href='/show_deleted'">Show Deleted</button>
+
+
+def show_deleted_table():
+    # deleted 테이블을 보여주는 로직 추가
+    pass  # 여기에 deleted 테이블을 표시하는 코드를 작성하세요.

@@ -71,9 +71,50 @@
         </div>
     </div>
 
+    <table>
+        <thead>
+            <tr>
+                <th>레코드 ID</th>
+                <th>레코드 내용</th>
+                <th>작업</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in record_rows %}
+            <tr>
+                <td>{{ record.content }}</td>
+                <td>
+                    <button onclick="deleteRecord('{{ record.id }}')">
+                        <img src="trash-icon.png" alt="휴지통 아이콘">
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <script>
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
+        }
+
+        function deleteRecord(recordId) {
+            if (confirm("정말로 이 레코드를 삭제하시겠습니까?")) {
+                fetch(`/delete-record/${recordId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // 페이지 새로고침 또는 레코드 삭제 후 UI 업데이트
+                            location.reload();
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("삭제 중 오류 발생:", error);
+                    });
+            }
         }
     </script>
 </body>

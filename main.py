@@ -24,7 +24,8 @@ def setup_driver():
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     )
     service = ChromeService(ChromeDriverManager().install())
-    return webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(service=service, options=options)
+    return driver
 
 
 # 플레이리스트 제목을 가져오는 함수
@@ -54,6 +55,22 @@ def create_table(c, table_name):
         f"""CREATE TABLE IF NOT EXISTS "{table_name}"
                   (id INTEGER PRIMARY KEY, video_title TEXT, video_author TEXT)"""
     )
+
+
+# 테이블 내 모든 레코드를 삭제하는 함수
+def delete_table(table_name):
+    conn = sqlite3.connect("youtube_playlists.db")
+    c = conn.cursor()
+
+    try:
+        c.execute(f'DELETE FROM "{table_name}"')
+        conn.commit()
+        print(f"테이블 '{table_name}'의 모든 레코드가 삭제되었습니다.")
+    except sqlite3.Error as e:
+        print(f"테이블 '{table_name}' 삭제 중 오류 발생: {str(e)}")
+
+    c.close()
+    conn.close()
 
 
 # 페이지를 끝까지 스크롤하는 함수
@@ -88,6 +105,7 @@ def process_video_item(item, index):
         )
         .text.strip()
     )
+
     return index, video_title, video_author
 
 
@@ -107,10 +125,13 @@ def find_hidden_videos(driver, timeout=10):
 
 
 # 플레이리스트를 처리하는 메인 함수
-def process_playlists(playlist_urls):
+def process_playlists():
     conn = sqlite3.connect("youtube_playlists.db")
     c = conn.cursor()
     driver = setup_driver()
+
+    with open("playlist.txt", "r", encoding="utf-8") as file:
+        playlist_urls = [line.strip() for line in file.readlines()]
 
     # 삭제된 동영상을 위한 테이블 생성
     c.execute(
@@ -167,9 +188,9 @@ def process_playlists(playlist_urls):
                     _, video_title, video_author = process_video_item(item, index)
                     visible_video_ids.add((video_title, video_author))
                 except (
-                    TimeoutException,
-                    NoSuchElementException,
-                    StaleElementReferenceException,
+                        TimeoutException,
+                        NoSuchElementException,
+                        StaleElementReferenceException,
                 ):
                     pass
 
@@ -201,9 +222,9 @@ def process_playlists(playlist_urls):
                     )
                     print(f"{index}. {video_author} : {video_title}")
                 except (
-                    TimeoutException,
-                    NoSuchElementException,
-                    StaleElementReferenceException,
+                        TimeoutException,
+                        NoSuchElementException,
+                        StaleElementReferenceException,
                 ) as e:
                     print(f"Error processing video {index}: {str(e)}")
                     c.execute(
@@ -222,11 +243,12 @@ def process_playlists(playlist_urls):
             print(f"Error processing playlist {playlist_url}: {str(e)}")
 
     driver.quit()
+    c.close()
     conn.close()
 
 
 # 삭제된 동영상을 보여주는 함수
-def show_deleted_videos():
+def show_deleted_table():
     conn = sqlite3.connect("youtube_playlists.db")
     c = conn.cursor()
 
@@ -247,15 +269,32 @@ def show_deleted_videos():
     else:
         print("\n삭제된 동영상이 없습니다.")
 
+    c.close()
     conn.close()
 
 
 def main():
-    with open("playlist.txt", "r", encoding="utf-8") as file:
-        playlist_urls = [line.strip() for line in file.readlines()]
+    while True:
+        print("*****************PlayListSaver*****************")
+        print("1.플레이리스트 업데이트\t2.deleted 테이블 조회")
+        print("3.deleted 테이블 삭제")
+        print("q. 프로그램 종료")
+        print("***********************************************")
 
-    process_playlists(playlist_urls)
-    show_deleted_videos()
+        user_input = input("1, 2, q 중 하나 입력 : ")
+
+        if user_input == "1":
+            process_playlists()
+        elif user_input == "2":
+            show_deleted_table()
+        elif user_input == "3":
+            delete_table("deleted")
+        elif user_input == "q":
+            print("프로그램을 종료합니다......")
+            break
+        else:
+            print("잘못된 입력입니다. 다시 입력해주세요")
+            print("***********************************************")
 
 
 if __name__ == "__main__":

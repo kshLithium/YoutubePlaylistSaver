@@ -1,24 +1,8 @@
 from flask import Flask, request, jsonify
 import sqlite3
-import re
-import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException,
-    NoSuchElementException,
-    StaleElementReferenceException,
-)
 from main import process_playlists
 
 app = Flask(__name__)
-
-# ... existing code ...
-
 
 @app.route("/process_playlists", methods=["POST"])
 def process_playlists_endpoint():
