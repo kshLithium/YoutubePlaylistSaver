@@ -281,7 +281,7 @@ def main():
         print("q. 프로그램 종료")
         print("***********************************************")
 
-        user_input = input("1, 2, q 중 하나 입력 : ")
+        user_input = input("1, 2, 3, q 중 하나 입력 : ")
 
         if user_input == "1":
             process_playlists()
