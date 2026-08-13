@@ -1,5 +1,16 @@
 .DS_Store
-PlaylistSaver
-playlist.txt
-youtube_playlists.db
-__pycache__
+.idea/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+
+# Runtime snapshots and backups
+*.db
+*.db-shm
+*.db-wal
+backups/
+data/
+
+# Obsolete local installers
+*.deb

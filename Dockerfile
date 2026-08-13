@@ -1,32 +1,17 @@
-FROM python:3
+FROM python:3.12-slim
 
-WORKDIR /usr/src
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# Install Google Chrome
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get update \
-    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
-    && rm google-chrome-stable_current_amd64.deb \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install ChromeDriver
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/` curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN mkdir chrome
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/src/chrome
-
-# Copy requirements file and install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+COPY main.py playlist.txt ./
 
-# Run the application
-CMD ["python", "main.py"]
+RUN mkdir -p /data
+VOLUME ["/data"]
+
+ENTRYPOINT ["python", "main.py"]
+CMD ["collect", "--db", "/data/youtube_playlists_v2.db"]
