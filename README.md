@@ -11,45 +11,13 @@
 
 Selenium, Chrome, ChromeDriver는 사용하지 않습니다. `yt-dlp`와 YouTube의 공개 응답만 사용하므로 GPU, CUDA, 브라우저 패키지도 필요하지 않습니다.
 
-## 가장 간단한 실행 방법: Docker
-
-```bash
-git clone https://github.com/kshLithium/YoutubePlaylistSaver.git
-cd YoutubePlaylistSaver
-docker build -t youtube-playlist-saver .
-mkdir -p data
-docker run --rm -v "$PWD/data:/data" youtube-playlist-saver
-```
-
-Windows PowerShell에서는 데이터 폴더를 만든 뒤 다음처럼 실행할 수 있습니다.
-
-```powershell
-New-Item -ItemType Directory -Force data
-docker build -t youtube-playlist-saver .
-docker run --rm -v "${PWD}\data:/data" youtube-playlist-saver
-```
-
-DB는 호스트의 `data/youtube_playlists_v2.db`에 남습니다. 기존 DB를 이어서 사용하려면 실행 전에 백업 DB를 이 이름으로 `data` 폴더에 복사하면 됩니다.
-
-Docker 이미지의 기본 명령은 다음과 같습니다.
-
-```bash
-python main.py collect --db /data/youtube_playlists_v2.db
-```
-
-다른 명령은 이미지 이름 뒤에 지정합니다.
-
-```bash
-docker run --rm -v "$PWD/data:/data" youtube-playlist-saver history --db /data/youtube_playlists_v2.db
-docker run --rm -v "$PWD/data:/data" youtube-playlist-saver changes --db /data/youtube_playlists_v2.db
-docker run --rm -v "$PWD/data:/data" youtube-playlist-saver unavailable --db /data/youtube_playlists_v2.db
-```
-
-## Python으로 직접 실행
+## 설치 및 실행
 
 Python 3.12 기준입니다.
 
 ```bash
+git clone https://github.com/kshLithium/YoutubePlaylistSaver.git
+cd YoutubePlaylistSaver
 python -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python main.py collect
@@ -58,9 +26,21 @@ python -m venv .venv
 Windows PowerShell:
 
 ```powershell
+git clone https://github.com/kshLithium/YoutubePlaylistSaver.git
+Set-Location YoutubePlaylistSaver
 py -3.12 -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python main.py collect
+```
+
+기존 이력을 이어서 사용하려면 백업 DB를 저장소 루트의 `youtube_playlists_v2.db`로 복사한 뒤 실행합니다. 이 파일이 없으면 자동으로 새 DB를 만듭니다.
+
+조회 명령은 다음과 같습니다.
+
+```bash
+python main.py history
+python main.py changes
+python main.py unavailable
 ```
 
 ## 공식 YouTube Data API 사용
@@ -70,12 +50,6 @@ py -3.12 -m venv .venv
 ```bash
 export YOUTUBE_API_KEY='...'
 python main.py collect --provider youtube-api
-```
-
-Docker에서는 환경변수를 전달합니다.
-
-```bash
-docker run --rm -e YOUTUBE_API_KEY -v "$PWD/data:/data" youtube-playlist-saver collect --provider youtube-api --db /data/youtube_playlists_v2.db
 ```
 
 ## 데이터 안전장치
